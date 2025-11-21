@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Waves — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#00111f; --accent1:#009dff; --accent2:#00eaff; --muted:#c4e7ffad;
+    --card:#071025;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;}
+  html {scroll-behavior:smooth;}
+  body{
+    min-height:100vh;
+    color:#eaf6ff;
+    background:linear-gradient(180deg,#00111f 0%, #001a2b 60%);
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* animated blue background blobs */
+  .bg-blob{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(30rem 20rem at 10% 10%, rgba(0,157,255,0.12), transparent 20%),
+      radial-gradient(28rem 18rem at 90% 80%, rgba(0,234,255,0.09), transparent 20%);
+    animation: blobmove 12s ease-in-out infinite;
+    mix-blend-mode:screen;
+  }
+  @keyframes blobmove {
+    0%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(6%) rotate(8deg)}
+    100%{transform:translateY(0) rotate(0deg)}
+  }
+
+  header{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 48px; background:rgba(2,8,20,0.45); backdrop-filter: blur(6px);
+    border-bottom:1px solid rgba(255,255,255,0.03);
+  }
+  header img.logo{width:58px; height:58px; object-fit:contain; border-radius:10px;}
+  nav a{margin-left:22px; color:#b8dbff; text-decoration:none; font-weight:600;}
+  nav a:hover{color:#fff; transform:translateY(-2px); transition:.18s;}
+
+  .container{max-width:1100px;margin:0 auto;padding:36px;}
+  .hero{padding:72px 0 36px; text-align:left; display:flex; gap:36px; align-items:center;}
+  .hero-left{flex:1;}
+  .hero h1{font-size:48px; margin-bottom:8px;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .hero p{color:var(--muted); font-size:16px; margin-bottom:18px;}
+  .controls{display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{background:transparent; border:1px solid rgba(0,191,255,0.12); padding:10px 16px; border-radius:10px; color:#bfeaff; cursor:pointer; font-weight:600;}
+  .btn:hover{background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#00121D; border-color:transparent; transform:translateY(-3px);}
+
+  /* right card */
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:18px; width:320px; box-shadow:0 6px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);}
+  .card h3{font-size:16px; margin-bottom:8px; color:#dff6ff;}
+  .skill{font-size:14px; color:var(--muted); margin-bottom:6px;}
+
+  section{position:relative; z-index:2;}
+  .section{padding:64px 0; border-top:1px solid rgba(255,255,255,0.02);}
+
+  .section h2{font-size:28px; margin-bottom:12px; color:#dff6ff;}
+  .section p{color:var(--muted); line-height:1.6; margin-bottom:12px; font-size:15px;}
+
+  /* Clips grid */
+  .clips-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:18px;}
+  .clip-card{background:var(--card); padding:10px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.03);}
+  .clip-card video{width:100%; height:160px; object-fit:cover; border-radius:8px; background:#000;}
+  .clip-meta{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+  .clip-meta .title{color:#dff6ff; font-weight:600; font-size:14px;}
+  .muted{color:var(--muted); font-size:13px;}
+
+  /* admin hidden area */
+  #admin-toggle{position:fixed; right:18px; bottom:18px; z-index:15;}
+  #admin-toggle .mini{background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:12px; color:#bfeaff; border:1px solid rgba(0,191,255,0.08); cursor:pointer;}
+  #admin-panel{position:fixed; right:18px; bottom:72px; width:360px; max-width:92vw; z-index:15; display:none; background:linear-gradient(180deg, rgba(2,8,20,0.96), rgba(3,12,28,0.98)); padding:16px; border-radius:12px; border:1px solid rgba(0,191,255,0.06); box-shadow:0 10px 40px rgba(0,0,0,0.6);}
+  #admin-panel h4{color:#dff6ff; margin-bottom:8px;}
+  #admin-panel input[type="password"], #admin-panel input[type="file"]{width:100%; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#eaf6ff; margin-bottom:8px;}
+  #admin-panel .admin-ctrls{display:flex; gap:8px;}
+  #admin-panel .note{color:var(--muted); font-size:13px; margin-top:8px;}
+
+  /* small screens */
+  @media (max-width:840px){
+    .hero{flex-direction:column;}
+    .card{width:100%;}
+  }
+</style>
+</head>
+<body>
+  <div class="bg-blob" aria-hidden="true"></div>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <img src="Waves.png" alt="Waves logo" class="logo">
+      <div>
+        <div style="font-weight:700;color:#eaf6ff">Waves</div>
+        <div style="font-size:12px;color:var(--muted)">Game Scripter • UI Designer</div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#clips">Clips</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero" aria-label="hero">
+      <div class="hero-left">
+        <h1>Waves</h1>
+        <p>Pro scripter & front-end dev. Roblox Lua, C#, C++, JavaScript, HTML, CSS.</p>
+        <div class="controls">
+          <a class="btn" href="#about">About Me</a>
+          <a class="btn" href="#skills">Skills</a>
+          <a class="btn" href="#clips">Clips</a>
+        </div>
+      </div>
+
+      <aside class="card" aria-hidden="true">
+        <h3>Quick facts</h3>
+        <div class="skill">• Roblox scripting (Lua)</div>
+        <div class="skill">• GUI & UX design</div>
+        <div class="skill">• Visual Studio • C# • C++</div>
+        <div style="height:8px"></div>
+        <div class="muted">Blue animated background • Smooth scroll</div>
+      </aside>
+    </section>
+
+    <section id="about" class="section">
+      <h2>About</h2>
+      <p>I build clean UI systems and optimized gameplay scripts. Focus on code quality and polished UX. Short, fast, and reliable.</p>
+    </section>
+
+    <section id="skills" class="section">
+      <h2>Skills</h2>
+      <p>Roblox Lua • GUI design • Tweening • C#, C++, Visual Studio • HTML/CSS/JS • Front-end & game tools.</p>
+    </section>
+
+    <section id="projects" class="section">
+      <h2>Projects</h2>
+      <p>Project cards can go here. Add repo links or live demos later.</p>
+    </section>
+
+    <!-- CLIPS -->
+    <section id="clips" class="section" aria-labelledby="clips-title">
+      <h2 id="clips-title">Clips</h2>
+      <p class="muted">Short demos & gameplay clips. Click play to preview.</p>
+
+      <div class="clips-grid" id="clipsGrid">
+        <!-- initial clip: using uploaded file path as source -->
+        <div class="clip-card" data-title="Clip1">
+          <video controls playsinline preload="metadata">
+            <source src="/mnt/data/0b708c54-291d-436e-a361-469f220e18ab.png" type="video/mp4">
+            Your browser doesn't support the video tag.
+          </video>
+          <div class="clip-meta">
+            <div class="title">Clip1</div>
+            <div class="muted">local</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- admin toggle + panel (hidden by default) -->
+  <div id="admin-toggle">
+    <div class="mini" id="adminOpenBtn" title="Admin (hidden)">Admin</div>
+  </div>
+
+  <aside id="admin-panel" aria-hidden="true" role="dialog">
+    <h4>Admin Upload</h4>
+    <input id="adminPass" type="password" placeholder="Enter password" autocomplete="off" />
+    <div style="display:flex; gap:8px;">
+      <button id="checkBtn" class="btn" style="padding:8px 12px;">Unlock</button>
+      <button id="lockBtn" class="btn" style="padding:8px 12px; display:none;">Lock</button>
+    </div>
+
+    <div id="adminArea" style="display:none; margin-top:12px;">
+      <input id="clipFile" type="file" accept="video/*" />
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button id="uploadBtn" class="btn">Upload (preview)</button>
+        <button id="clearBtn" class="btn">Clear</button>
+      </div>
+      <div class="note">Note: Uploads are local-only and saved to browser storage. No server upload.</div>
+    </div>
+  </aside>
+
+<script>
+/*
+  Client-side obfuscated password check.
+  Password is "Prithiv123"
+  Stored as a small obfuscated string (base64 of reversed string).
+  This makes it non-obvious at first glance, but remember: client-side checks can be discovered.
+*/
+(function(){
+  // obfuscated secret: base64 of reversed password ("321vihtirP")
+  const ob = "MzIxdmlodGlyUA==";
+  function revealSecret(){
+    try{
+      const rev = atob(ob);
+      return rev.split('').reverse().join('');
+    }catch(e){
+      return "Prithiv123"; // fallback
+    }
+  }
+
+  const adminOpenBtn = document.getElementById('adminOpenBtn');
+  const adminPanel = document.getElementById('admin-panel');
+  const checkBtn = document.getElementById('checkBtn');
+  const lockBtn = document.getElementById('lockBtn');
+  const adminPass = document.getElementById('adminPass');
+  const adminArea = document.getElementById('adminArea');
+  const clipFile = document.getElementById('clipFile');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const clipsGrid = document.getElementById('clipsGrid');
+
+  // toggle small panel visible
+  let panelVisible = false;
+  adminOpenBtn.addEventListener('click', ()=> {
+    panelVisible = !panelVisible;
+    adminPanel.style.display = panelVisible ? 'block' : 'none';
+    adminPanel.setAttribute('aria-hidden', panelVisible ? 'false' : 'true');
+  });
+
+  // check password
+  checkBtn.addEventListener('click', ()=> {
+    const input = adminPass.value || "";
+    if(input === revealSecret()){
+      unlockAdmin();
+    } else {
+      adminPass.value = "";
+      adminPass.placeholder = "Wrong — try again";
+      adminPass.focus();
+      setTimeout(()=> adminPass.placeholder = "Enter password", 1200);
+    }
+  });
+
+  function unlockAdmin(){
+    adminArea.style.display = 'block';
+    checkBtn.style.display = 'none';
+    lockBtn.style.display = 'inline-block';
+    adminPass.style.display = 'none';
+    adminPanel.style.borderColor = "rgba(0,191,255,0.18)";
+    // show a tiny success flash
+    adminOpenBtn.textContent = 'Admin ✓';
+  }
+
+  lockBtn.addEventListener('click', ()=> {
+    adminArea.style.display = 'none';
+    checkBtn.style.display = 'inline-block';
+    lockBtn.style.display = 'none';
+    adminPass.style.display = 'inline-block';
+    adminPass.value = '';
+    adminOpenBtn.textContent = 'Admin';
+  });
+
+  // upload handling (local only)
+  uploadBtn.addEventListener('click', ()=> {
+    const f = clipFile.files && clipFile.files[0];
+    if(!f){ alert('Choose a video file first.'); return; }
+    // create object URL
+    const url = URL.createObjectURL(f);
+    addClipCard(url, f.name, true);
+    // store metadata + base64 preview in localStorage for persistence
+    persistClip(f, url);
+    clipFile.value = "";
+  });
+
+  clearBtn.addEventListener('click', ()=> clipFile.value = "");
+
+  // helper to add clip card to grid
+  function addClipCard(src, title, isLocal=false){
+    const card = document.createElement('div');
+    card.className = 'clip-card';
+    card.innerHTML = `
+      <video controls playsinline preload="metadata">
+        <source src="${src}">
+        Your browser doesn't support the video tag.
+      </video>
+      <div class="clip-meta">
+        <div class="title">${escapeHtml(title || 'Clip')}</div>
+        <div class="muted">${isLocal ? 'local' : 'remote'}</div>
+      </div>
+    `;
+    clipsGrid.prepend(card);
+  }
+
+  // basic escape
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // persist clip file in localStorage as data URL (only for small files)
+  function persistClip(file, objUrl){
+    const reader = new FileReader();
+    reader.onload = function(){ 
+      try{
+        let stored = JSON.parse(localStorage.getItem('clips') || '[]');
+        stored.unshift({name:file.name, data:this.result, ts:Date.now()});
+        // limit stored items to 8 and size to avoid huge localStorage
+        if(stored.length>8) stored = stored.slice(0,8);
+        localStorage.setItem('clips', JSON.stringify(stored));
+      }catch(e){
+        console.warn('persist failed', e);
+      }
+    };
+    // read as data URL
+    reader.readAsDataURL(file);
+  }
+
+  // load persisted clips on startup
+  function loadPersisted(){
+    try{
+      const stored = JSON.parse(localStorage.getItem('clips') || '[]');
+      stored.forEach(it => addClipCard(it.data, it.name, true));
+    }catch(e){}
+  }
+
+  // initial load
+  loadPersisted();
+
+  // accessibility: allow enter to check
+  adminPass.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter') checkBtn.click();
+  });
+})();
+</script>
+</body>
+</html>
+<script>
+(function(){
+  const adminOpenBtn = document.getElementById('adminOpenBtn');
+  const adminPanel = document.getElementById('admin-panel');
+  const checkBtn = document.getElementById('checkBtn');
+  const lockBtn = document.getElementById('lockBtn');
+  const adminPass = document.getElementById('adminPass');
+  const adminArea = document.getElementById('adminArea');
+  const clipFile = document.getElementById('clipFile');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const clipsGrid = document.getElementById('clipsGrid');
+
+  const ob = "MzIxdmlodGlyUA=="; // password obfuscated
+
+  function revealSecret(){
+    return atob(ob).split('').reverse().join('');
+  }
+
+  // toggle panel
+  let panelVisible = false;
+  adminOpenBtn.addEventListener('click', () => {
+    panelVisible = !panelVisible;
+    adminPanel.style.display = panelVisible ? 'block' : 'none';
+    adminPanel.setAttribute('aria-hidden', !panelVisible);
+  });
+
+  // password check
+  checkBtn.addEventListener('click', () => {
+    if(adminPass.value === revealSecret()) unlockAdmin();
+    else {
+      adminPass.value = "";
+      adminPass.placeholder = "Wrong — try again";
+      setTimeout(()=> adminPass.placeholder = "Enter password", 1200);
+    }
+  });
+
+  lockBtn.addEventListener('click', () => {
+    adminArea.style.display = 'none';
+    checkBtn.style.display = 'inline-block';
+    lockBtn.style.display = 'none';
+    adminPass.style.display = 'inline-block';
+    adminPass.value = '';
+    adminOpenBtn.textContent = 'Admin';
+  });
+
+  function unlockAdmin(){
+    adminArea.style.display = 'block';
+    checkBtn.style.display = 'none';
+    lockBtn.style.display = 'inline-block';
+    adminPass.style.display = 'none';
+    adminOpenBtn.textContent = 'Admin ✓';
+  }
+
+  function addClipCard(src, title, isLocal=false){
+    const card = document.createElement('div');
+    card.className = 'clip-card';
+    card.innerHTML = `
+      <video controls playsinline preload="metadata">
+        <source src="${src}">
+        Your browser doesn't support the video tag.
+      </video>
+      <div class="clip-meta">
+        <div class="title">${escapeHtml(title || 'Clip')}</div>
+        <div class="muted">${isLocal ? 'local' : 'remote'}</div>
+      </div>
+    `;
+    clipsGrid.prepend(card);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // save to localStorage
+  function persistClip(file){
+    const reader = new FileReader();
+    reader.onload = function(){
+      try{
+        let stored = JSON.parse(localStorage.getItem('clips') || '[]');
+        stored.unshift({name:file.name, data:this.result, ts:Date.now()});
+        if(stored.length>8) stored = stored.slice(0,8);
+        localStorage.setItem('clips', JSON.stringify(stored));
+      }catch(e){
+        console.warn('persist failed', e);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // handle uploads
+  uploadBtn.addEventListener('click', () => {
+    const f = clipFile.files[0];
+    if(!f){ alert('Choose a video first'); return; }
+    const url = URL.createObjectURL(f);
+    addClipCard(url, f.name, true);
+    persistClip(f);
+    clipFile.value = "";
+  });
+
+  clearBtn.addEventListener('click', ()=> clipFile.value="");
+
+  // load persisted clips
+  function loadPersisted(){
+    try{
+      const stored = JSON.parse(localStorage.getItem('clips') || '[]');
+      stored.forEach(it => addClipCard(it.data, it.name, true));
+    }catch(e){}
+  }
+  loadPersisted();
+
+  adminPass.addEventListener('keydown', (e)=> { if(e.key==='Enter') checkBtn.click(); });
+})();
+</script>
+
